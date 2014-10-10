@@ -231,19 +231,19 @@ Proof. reflexivity.  Qed.
     its inputs are [false]. *)
 
 Definition nandb (b1:bool) (b2:bool) : bool :=
-  (* FILL IN HERE *) admit.
+    (negb (andb b1 b2)).
 
 (** Remove "[Admitted.]" and fill in each proof with 
     "[Proof. reflexivity. Qed.]" *)
 
 Example test_nandb1:               (nandb true false) = true.
-(* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_nandb2:               (nandb false false) = true.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 Example test_nandb3:               (nandb false true) = true.
-(* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_nandb4:               (nandb true true) = false.
-(* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 (** [] *)
 
 (** **** Exercise: 1 star (andb3) *)
@@ -252,16 +252,16 @@ Example test_nandb4:               (nandb true true) = false.
     otherwise. *)
 
 Definition andb3 (b1:bool) (b2:bool) (b3:bool) : bool :=
-  (* FILL IN HERE *) admit.
+  (andb (andb b1 b2) b3).
 
 Example test_andb31:                 (andb3 true true true) = true.
-(* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_andb32:                 (andb3 false true true) = false.
-(* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_andb33:                 (andb3 true false true) = false.
-(* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_andb34:                 (andb3 true true false) = false.
-(* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 (** [] *)
 
 (* ###################################################################### *)
@@ -486,12 +486,15 @@ Fixpoint exp (base power : nat) : nat :=
     Translate this into Coq. *)
 
 Fixpoint factorial (n:nat) : nat := 
-(* FILL IN HERE *) admit.
+    match n with 
+    | O => 1
+    | S n' => (mult (factorial n') n)
+    end.
 
 Example test_factorial1:          (factorial 3) = 6.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 Example test_factorial2:          (factorial 5) = (mult 10 12).
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 (** [] *)
 
 (** We can make numerical expressions a little easier to read and
@@ -554,7 +557,7 @@ Fixpoint ble_nat (n m : nat) : bool :=
   end.
 
 Example test_ble_nat1:             (ble_nat 2 2) = true.
-Proof. reflexivity.  Qed.
+Proof. simpl. reflexivity.  Qed.
 Example test_ble_nat2:             (ble_nat 2 4) = true.
 Proof. reflexivity.  Qed.
 Example test_ble_nat3:             (ble_nat 4 2) = false.
@@ -570,14 +573,14 @@ Proof. reflexivity.  Qed.
     simple, elegant solution for which [simpl] suffices. *)
 
 Definition blt_nat (n m : nat) : bool :=
-  (* FILL IN HERE *) admit.
+    match m with | O => false | S m' => (ble_nat n m') end.
 
 Example test_blt_nat1:             (blt_nat 2 2) = false.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 Example test_blt_nat2:             (blt_nat 2 4) = true.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 Example test_blt_nat3:             (blt_nat 4 2) = false.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 (** [] *)
 
 (* ###################################################################### *)
@@ -708,7 +711,11 @@ Proof.
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros m n o.
+  intros H1. intros H2.
+  rewrite -> H1. rewrite -> H2.
+  reflexivity.
+Qed.
 (** [] *)
 
 (** As we've seen in earlier examples, the [Admitted] command
@@ -738,9 +745,13 @@ Theorem mult_S_1 : forall n m : nat,
   m = S n -> 
   m * (1 + n) = m * m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+    intros n m.
+    simpl.
+    intros H.
+    rewrite -> H.
+    reflexivity.
+Qed.
 (** [] *)
-
 
 
 (* ###################################################################### *)
@@ -824,7 +835,12 @@ Proof.
 Theorem zero_nbeq_plus_1 : forall n : nat,
   beq_nat 0 (n + 1) = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
+    intros n.
+    destruct n as [| n'].
+        simpl. reflexivity.
+
+        simpl. reflexivity.
+Qed.
 (** [] *)
 
 (* ###################################################################### *)
@@ -839,13 +855,30 @@ Theorem identity_fn_applied_twice :
   (forall (x : bool), f x = x) ->
   forall (b : bool), f (f b) = b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros f.
+  intros H.
+  intros b.
+  rewrite -> H. rewrite -> H.
+  reflexivity.
+Qed.
 
 (** Now state and prove a theorem [negation_fn_applied_twice] similar
     to the previous one but where the second hypothesis says that the
     function [f] has the property that [f x = negb x].*)
 
-(* FILL IN HERE *)
+Theorem negation_fn_applied_twice :
+    forall (f: bool -> bool),
+    (forall (x: bool), f x = (negb x)) ->
+    forall (b: bool), f (f b) = b.
+Proof.
+    intros f. intros H.
+    intros b.
+    rewrite -> H. rewrite -> H. 
+    destruct b.
+    simpl. reflexivity.
+    simpl. reflexivity.
+Qed.
+
 
 (** **** Exercise: 2 stars (andb_eq_orb) *)
 (** Prove the following theorem.  (You may want to first prove a
@@ -857,7 +890,13 @@ Theorem andb_eq_orb :
   (andb b c = orb b c) ->
   b = c.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b c.
+  destruct b.
+  destruct c.
+  simpl. reflexivity.
+  simpl. intros H. inversion H.
+  simpl. intros H. rewrite -> H. reflexivity.
+Qed.
 
 (** **** Exercise: 3 stars (binary) *)
 (** Consider a different, more efficient representation of natural
@@ -894,7 +933,33 @@ Proof.
         converting it to unary and then incrementing. 
 *)
 
-(* FILL IN HERE *)
+Inductive tnat: Type :=
+    | TO : tnat
+    | TZ : tnat -> tnat
+    | TP : tnat -> tnat.
+
+Fixpoint tnat_inc (t: tnat) : tnat :=
+    match t with 
+    | TO => TP TO
+    | TZ t' => TP t'
+    | TP t' => TZ (tnat_inc t')
+    end.
+
+Fixpoint tnat_to_nat(t: tnat) : nat :=
+    match t with
+    | TO => 0
+    | TZ t' => (tnat_to_nat t') + (tnat_to_nat t')
+    | TP t' => S((tnat_to_nat t') + (tnat_to_nat t'))
+    end.
+
+Example test_tnat_to_nat_1 : (tnat_to_nat (TZ (TZ (TP TO)))) = 4.
+Proof. simpl. reflexivity. Qed.
+Example test_tnat_to_nat_2 : (tnat_to_nat (TZ (TP (TP TO)))) = 6.
+Proof. simpl. reflexivity. Qed.
+Example test_tnat_to_nat_3 : (tnat_to_nat (TP (TZ (TP TO)))) = 5.
+Proof. simpl. reflexivity. Qed.
+Example test_tnat_to_nat_0 : (tnat_to_nat TO) = 0.
+Proof. simpl. reflexivity. Qed.
 (** [] *)
 
 (* ###################################################################### *)
