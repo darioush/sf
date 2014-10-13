@@ -711,7 +711,16 @@ Admitted.
 
 Theorem normalize_twice:
     forall t: tnat, normalize (normalize t) = normalize t.
-Admitted.
+Proof.
+    intros t.
+    induction t.
+    reflexivity.
+
+    simpl. inversion IHt. rewrite IHt.
+    
+    simpl. reflexivity.
+
+
 
 
 Theorem conv_normalized :
