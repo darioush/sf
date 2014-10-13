@@ -107,7 +107,11 @@ Qed.
 Theorem andb_true_elim2 : forall b c : bool,
   andb b c = true -> c = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+    intros b c.
+    destruct b.
+    Case "true". simpl. intros H. rewrite -> H. reflexivity.
+    Case "false". simpl. intros H. inversion H.
+Qed.
 (** [] *)
 
 (** There are no hard and fast rules for how proofs should be
@@ -224,24 +228,35 @@ Proof.
 Theorem mult_0_r : forall n:nat,
   n * 0 = 0.
 Proof.
-  (* FILL IN HERE *) Admitted.
+    intros n. induction n. reflexivity.
+    simpl. rewrite -> IHn. reflexivity.
+Qed.
 
 Theorem plus_n_Sm : forall n m : nat, 
   S (n + m) = n + (S m).
 Proof. 
-  (* FILL IN HERE *) Admitted.
-
+  intros n m.
+  induction n.
+  simpl. reflexivity.
+  simpl. rewrite -> IHn. reflexivity.
+Qed.
 
 Theorem plus_comm : forall n m : nat,
   n + m = m + n.
 Proof.
-  (* FILL IN HERE *) Admitted.
-
+  intros n m.
+  induction n. rewrite -> Basics.plus_O_n. rewrite -> plus_0_r. reflexivity.
+  simpl. rewrite -> IHn. rewrite -> plus_n_Sm. reflexivity.
+Qed.
 
 Theorem plus_assoc : forall n m p : nat,
   n + (m + p) = (n + m) + p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+    intros n m p.
+    induction n.
+    simpl. reflexivity. 
+    simpl. rewrite -> IHn. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (double_plus) *)
@@ -258,7 +273,9 @@ Fixpoint double (n:nat) :=
 
 Lemma double_plus : forall n, double n = n + n .
 Proof.  
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n. reflexivity.
+  simpl. rewrite -> IHn. rewrite -> plus_n_Sm. reflexivity.
+Qed.
 (** [] *)
 
 
@@ -356,18 +373,32 @@ Proof.
 Theorem plus_swap : forall n m p : nat, 
   n + (m + p) = m + (n + p).
 Proof.
-  (* FILL IN HERE *) Admitted.
-
+  intros n m p.
+  rewrite -> plus_assoc. rewrite -> plus_assoc.
+  assert (H: n + m = m + n).
+    rewrite -> plus_comm. reflexivity.
+  rewrite -> H. reflexivity.
+Qed.
 
 (** Now prove commutativity of multiplication.  (You will probably
     need to define and prove a separate subsidiary theorem to be used
     in the proof of this one.)  You may find that [plus_swap] comes in
     handy. *)
+Theorem mult_m_Sn : forall m n : nat,
+    m * S n = m + m * n.
+Proof.
+    intros m n.
+    induction m. reflexivity.
+    simpl. rewrite -> IHm. rewrite -> plus_swap. reflexivity.
+Qed.
 
 Theorem mult_comm : forall m n : nat,
  m * n = n * m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m.
+  induction n. simpl. rewrite -> mult_0_r. reflexivity.
+  simpl. rewrite -> IHn. rewrite -> mult_m_Sn. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (evenb_n__oddb_Sn) *)
@@ -377,7 +408,13 @@ Proof.
 Theorem evenb_n__oddb_Sn : forall n : nat,
   evenb n = negb (evenb (S n)).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n.
+  induction n. reflexivity.
+  simpl. rewrite -> IHn.
+  rewrite -> negb_involutive.
+  destruct n. reflexivity.
+  simpl. reflexivity.
+Qed.
 (** [] *)
 
 (* ###################################################################### *)
@@ -395,31 +432,45 @@ Proof.
 Theorem ble_nat_refl : forall n:nat,
   true = ble_nat n n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n.
+  induction n. reflexivity.
+  simpl. rewrite -> IHn. reflexivity.
+Qed.
 
 Theorem zero_nbeq_S : forall n:nat,
   beq_nat 0 (S n) = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n.
+  simpl. reflexivity.
+Qed.
 
 Theorem andb_false_r : forall b : bool,
   andb b false = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b. destruct b. reflexivity. reflexivity.
+Qed.
 
 Theorem plus_ble_compat_l : forall n m p : nat, 
   ble_nat n m = true -> ble_nat (p + n) (p + m) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros m n p.
+  intros H.
+  induction p.
+  simpl. rewrite -> H. reflexivity.
+  simpl. rewrite -> IHp. reflexivity.
+Qed.
 
 Theorem S_nbeq_0 : forall n:nat,
   beq_nat (S n) 0 = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
+    intros n. 
+    simpl. reflexivity.
+Qed.
 
 Theorem mult_1_l : forall n:nat, 1 * n = n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. simpl. rewrite -> plus_0_r. reflexivity.
+Qed.
 
 Theorem all3_spec : forall b c : bool,
     orb
@@ -428,17 +479,50 @@ Theorem all3_spec : forall b c : bool,
                (negb c))
   = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b c.
+  destruct b. simpl.
+  destruct c. simpl. reflexivity.
+  reflexivity.
+
+  reflexivity.
+Qed.
 
 Theorem mult_plus_distr_r : forall n m p : nat,
   (n + m) * p = (n * p) + (m * p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p.
+  induction p.
+  rewrite -> mult_0_r. rewrite -> mult_0_r. rewrite -> mult_0_r.
+  simpl. reflexivity.
+
+  assert (H: forall n: nat, n * S p = n * p + n ).
+  intros n0.
+  rewrite -> mult_comm. rewrite -> mult_n_Sm. rewrite -> mult_comm. reflexivity.
+
+  rewrite -> H. rewrite -> IHp. rewrite -> H. rewrite -> H.
+  rewrite <- plus_assoc. rewrite -> plus_comm. rewrite -> plus_assoc.
+  rewrite -> plus_assoc. 
+
+  assert (H2: forall a b c d: nat, a + b + c + d = d + b + a + c).
+  intros a b c d. 
+  rewrite <- plus_comm.
+    assert (H3: forall a b c : nat, a + b + c = b + a + c).
+    intros a0 b0 c0.
+    rewrite <- plus_assoc. rewrite plus_swap. rewrite -> plus_assoc. reflexivity.
+  rewrite -> H3. rewrite -> plus_assoc. rewrite plus_assoc. reflexivity.
+
+ rewrite -> H2. reflexivity.
+Qed.
 
 Theorem mult_assoc : forall n m p : nat,
   n * (m * p) = (n * m) * p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+    intros n m p.
+    induction n.
+    reflexivity.
+    simpl. rewrite mult_plus_distr_r. 
+    rewrite -> IHn. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (beq_nat_refl) *)
@@ -451,7 +535,10 @@ problem using the theorem no matter which way we state it. *)
 Theorem beq_nat_refl : forall n : nat, 
   true = beq_nat n n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+    intros n.
+    induction n. reflexivity.
+    simpl. rewrite -> IHn. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (plus_swap') *)
@@ -469,7 +556,13 @@ Proof.
 Theorem plus_swap' : forall n m p : nat, 
   n + (m + p) = m + (n + p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros m n p.
+  rewrite -> plus_assoc.
+  replace (m + n) with (n + m).
+  rewrite <- plus_assoc.
+  reflexivity.
+  rewrite -> plus_comm. reflexivity.
+Qed.
 (** [] *)
 
 
@@ -486,7 +579,34 @@ Proof.
     wanting to change your original definitions to make the property
     easier to prove, feel free to do so.) *)
 
-(* FILL IN HERE *)
+Inductive tnat: Type :=
+    | TO : tnat
+    | TZ : tnat -> tnat
+    | TP : tnat -> tnat.
+
+Fixpoint tnat_inc (t: tnat) : tnat :=
+    match t with 
+    | TO => TP TO
+    | TZ t' => TP t'
+    | TP t' => TZ (tnat_inc t')
+    end.
+
+Fixpoint tnat_to_nat(t: tnat) : nat :=
+    match t with
+    | TO => 0
+    | TZ t' => (tnat_to_nat t') + (tnat_to_nat t')
+    | TP t' => S((tnat_to_nat t') + (tnat_to_nat t'))
+    end.
+
+Theorem commutes_tnat_inc :
+    forall t : tnat, tnat_to_nat((tnat_inc t)) = S (tnat_to_nat t).
+Proof.
+    intros t.
+    induction t.
+    Case "zero". reflexivity.
+    Case "TZ t". reflexivity.
+    Case "TP t". simpl. rewrite -> IHt. simpl. rewrite -> plus_comm. simpl. reflexivity.
+Qed.
 (** [] *)
 
 
@@ -515,7 +635,133 @@ Proof.
     here. 
 *)
 
-(* FILL IN HERE *)
+Fixpoint nat_to_tnat (n: nat) : tnat :=
+    match n with
+    | 0 => TO
+    | S n' => (tnat_inc (nat_to_tnat n'))
+    end.
+
+Theorem comm_nat_tnat_nat :
+    forall n: nat, (tnat_to_nat (nat_to_tnat n)) = n.
+Proof.
+    intros n.
+    induction n. reflexivity.
+    simpl. rewrite commutes_tnat_inc. rewrite IHn. reflexivity.
+Qed.
+
+Fixpoint normalize (t: tnat) : tnat :=
+    match t with
+    | TO => TO
+    | TP _ => t
+    | TZ t' => match (normalize t') with
+                | TO => TO
+                | _ => t
+                end
+    end.
+
+Theorem comm_nat_to_tnat_tnat_inc : forall n: nat,
+    nat_to_tnat(S n) = tnat_inc (nat_to_tnat n).
+Proof.
+    intros n.
+    induction n. reflexivity.
+    simpl. rewrite <- IHn. simpl.
+    reflexivity.
+Qed.
+
+Theorem zero_doubles : forall n : nat, 
+    n + n = 0 -> n = 0.
+Proof.
+    intros n.
+    destruct n. reflexivity.
+    intros.
+    inversion H.
+Qed.
+
+Theorem nat_to_tnat_zeros: forall t: tnat,
+    (tnat_to_nat t) = 0 -> TO = normalize t.
+Proof.
+    intros t.  intros H.
+    induction t.
+    reflexivity.
+
+    simpl.
+
+    assert (H1: (tnat_to_nat (TZ t)) = 0 -> (tnat_to_nat t) = 0).
+    simpl.
+    rewrite -> zero_doubles with (n:= tnat_to_nat t).
+    reflexivity.
+    assert (H2: (tnat_to_nat (TZ t) = tnat_to_nat t + tnat_to_nat t)).
+    reflexivity.
+    rewrite <- H2.
+    apply H.
+
+    assert (H3: TO = normalize t).
+    rewrite <- IHt. reflexivity.
+    rewrite <- H1. reflexivity.
+    apply H.
+
+    rewrite <- H3. reflexivity.
+
+    inversion H. 
+Qed.
+
+Theorem comm_normalize_tnat_inc :
+    forall t: tnat, tnat_inc(normalize t) = normalize(tnat_inc t).
+Admitted.
+
+Theorem normalize_twice:
+    forall t: tnat, normalize (normalize t) = normalize t.
+Admitted.
+
+
+Theorem conv_normalized :
+    forall n: nat, nat_to_tnat n = normalize (nat_to_tnat n).
+Proof.
+    intros n.
+    induction n.
+    reflexivity.
+
+    simpl.
+    rewrite -> IHn.
+    rewrite -> comm_normalize_tnat_inc.
+    rewrite -> normalize_twice.
+    reflexivity.
+Qed.
+
+
+
+Theorem comm_thing : 
+    forall n: nat, tnat_inc(nat_to_tnat n) = nat_to_tnat (S n).
+Admitted.
+
+
+Theorem comm_tnat_nat_normalized_tnat :
+        forall n: nat, forall t: tnat, n = (tnat_to_nat t) ->
+                    (nat_to_tnat n) = (normalize t).
+Proof.
+    induction n.
+    intros t.
+    intros H.
+    simpl.
+
+    assert(H1: (tnat_to_nat t) = 0 -> TO = normalize t).
+    apply nat_to_tnat_zeros.
+    rewrite <- H1. reflexivity. rewrite <- H. reflexivity.
+
+
+    intros t0.
+    intros H.
+
+    simpl.
+    rewrite -> IHn with (t := nat_to_tnat n).
+    rewrite -> comm_normalize_tnat_inc.
+    rewrite -> comm_thing.
+    rewrite -> H.
+    rewrite -> comm_nat_tnat_nat.
+    admit.
+
+    rewrite comm_nat_tnat_nat. reflexivity.
+Qed.
 (** [] *)
 
 (* ###################################################################### *)
