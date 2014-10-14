@@ -718,8 +718,8 @@ Proof.
 
     simpl. inversion IHt. rewrite IHt.
     
-    simpl. reflexivity.
-
+    simpl. admit.
+Admitted.
 
 
 
@@ -765,12 +765,11 @@ Proof.
     rewrite -> IHn with (t := nat_to_tnat n).
     rewrite -> comm_normalize_tnat_inc.
     rewrite -> comm_thing.
-    rewrite -> H.
+    rewrite -> H. admit.
     rewrite -> comm_nat_tnat_nat.
-    admit.
+Admitted.
 
-    rewrite comm_nat_tnat_nat. reflexivity.
-Qed.
+(**    rewrite comm_nat_tnat_nat. reflexivity. *)
 (** [] *)
 
 (* ###################################################################### *)
